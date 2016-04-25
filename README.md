@@ -73,7 +73,7 @@ This function will be called before submitting the form. You can modify data bef
 
 Return a value any other than ```true``` or ```Promise.resolve(true)``` will prevent the form from submitting. 
 
-### window.MagicForm.ajaxify(formElem: HTMLFormElement, hooks: any) -> Promise
+### window.MagicForm.ajaxify(formElem: HTMLFormElement, hooks: any)
 Make a form do AJAX submit when submit button is clicked.
 
 The object ```hooks``` is the same as ```hooks``` in ```window.MagicForm.ajaxSubmit```.
