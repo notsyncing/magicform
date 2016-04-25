@@ -35,7 +35,7 @@ Result:
 </form>
 ```
 
-More field name convention can be found in ```tests``` folder.
+More field name conventions can be found in ```tests``` folder.
 
 ### window.MagicForm.serialize(formElem: HTMLFormElement) -> any
 Serialize a form into a JSON object.
@@ -54,7 +54,7 @@ MagicForm.serialize(document.getElementById("testMultipleFieldsForm"));
 ```
 Result:
 ```js
-{ id: 1, key: 2, flag: 3, reason: "hello" }
+{ id: "1", key: "2", flag: "3", reason: "hello" }
 ```
 
 ### window.MagicForm.serializeSimple(formElem: HTMLFormElement) -> any
