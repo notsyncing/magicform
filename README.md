@@ -78,7 +78,18 @@ Make a form do AJAX submit when submit button is clicked.
 
 The object ```hooks``` is the same as ```hooks``` in ```window.MagicForm.ajaxSubmit```.
 
-## Browser compatiblity
+### window.MagicForm.setConfigs(configs: any)
+Set global configurations of serializing.
+
+where ```configs``` can have:
+
+```ignoreInvisibleFields```: Do not parse or serialize a field when it's invisble (determined by getComputedStyle), default ```false```
+
+```ignoreHiddenFields```: Do not parse or serialize a field which has ```type="hidden"```, default ```false```
+
+```uncheckedAsFalse```: Serialize a unchecked checkbox field as ```false```, or will ignore it, default ```true```
+
+## Browser compatibility
 IE 9+ (<9 may work, not tested)
 
 Other browsers should be fine.
