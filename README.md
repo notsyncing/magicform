@@ -71,13 +71,13 @@ The object ```hooks``` may contains below functions:
 ##### beforeSubmit(data: any | FormData) -> Promise | Boolean
 This function will be called before submitting the form. You can modify data before submitting.
 
+Return a value any other than ```true``` or ```Promise.resolve(true)``` will prevent the form from submitting. 
+
 ##### success(response: String)
 This function will be called after the server responds with a 200. ```response``` is the response text.
 
 ##### failed(err: Error)
 This function will be called when any error occured before submit, or the server responds with any code other than 200. ```err``` may be undefined.
-
-Return a value any other than ```true``` or ```Promise.resolve(true)``` will prevent the form from submitting. 
 
 ### window.MagicForm.ajaxify(formElem: HTMLFormElement, hooks: any)
 Make a form do AJAX submit when submit button is clicked.
