@@ -10,6 +10,10 @@
         ignoreHiddenFields: false,
         uncheckedAsFalse: true
     };
+    
+    var defaultAjaxConfigs = {
+        serializeAsJsonToParameter: false
+    };
 
     function getInputElementValue(inputElem)
     {
@@ -346,6 +350,8 @@
                 if (method.toLocaleLowerCase() !== "post") {
                     url += "?" + simpleObjectToQueryString(data);
                     data = null;
+                } else if (typeof data === "string") {
+                    data = data;
                 } else if ((window.FormData) && (!(data instanceof FormData))) {
                     data = simpleObjectToQueryString(data);
                 }
@@ -413,12 +419,22 @@
         });
     }
 
-    window.MagicForm.ajaxSubmit = function (formElem, hooks) {
+    window.MagicForm.ajaxSubmit = function (formElem, hooks, opts) {
         var method = formElem.method || "get";
         var url = formElem.action;
         var data;
 
         hooks = hooks || {};
+        opts = opts || defaultAjaxConfigs;
+        
+        var serializeData = function () {
+            if (opts.serializeAsJsonToParameter) {
+                var o = window.MagicForm.serialize(formElem);
+                return opts.serializeAsJsonToParameter + "=" + encodeURIComponent(JSON.stringify(o));
+            }
+            
+            return window.MagicForm.serializeSimple(formElem);
+        };
 
         if (method.toLowerCase() === "post") {
             if (formElem.enctype === "multipart/form-data") {
@@ -428,10 +444,10 @@
                     return iframeUpload(formElem, hooks);
                 }
             } else {
-                data = window.MagicForm.serializeSimple(formElem);
+                data = serializeData();
             }
         } else {
-            data = window.MagicForm.serializeSimple(formElem);
+            data = serializeData();
         }
         
         var p;
@@ -468,14 +484,15 @@
         }
     }
 
-    window.MagicForm.ajaxify = function (formElem, hooks) {
+    window.MagicForm.ajaxify = function (formElem, hooks, opts) {
         addEventListener(formElem, "submit", function (event) {
             event = event || window.event;
             event.preventDefault();
 
             hooks = hooks || {};
+            opts = opts || defaultAjaxConfigs;
 
-            window.MagicForm.ajaxSubmit(formElem, hooks)
+            window.MagicForm.ajaxSubmit(formElem, hooks, opts)
                 .then(function (response) {
                     if (hooks.success) {
                         hooks.success(response);

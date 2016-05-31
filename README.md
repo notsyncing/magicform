@@ -63,7 +63,7 @@ Serialize a form into a JSON object, but without nested structure.
 ### window.MagicForm.serializePlain(formElem: HTMLFormElement) -> String
 Serialize a form into a query string.
 
-### window.MagicForm.ajaxSubmit(formElem: HTMLFormElement, hooks: any) -> Promise
+### window.MagicForm.ajaxSubmit(formElem: HTMLFormElement, hooks: any, opts: any) -> Promise
 AJAX submit a form immediately.
 
 The object ```hooks``` may contains below functions:
@@ -79,7 +79,14 @@ This function will be called after the server responds with a 200. ```response``
 ##### failed(err: Error)
 This function will be called when any error occured before submit, or the server responds with any code other than 200. ```err``` may be undefined.
 
-### window.MagicForm.ajaxify(formElem: HTMLFormElement, hooks: any)
+The object ```opts``` may contains below options:
+
+##### serializeAsJsonToParameter: String | Boolean
+If this is set to ```false```, ```null``` or ```undefined```, it will be ignored; otherwise, it will submit a form like this (```serializeAsJsonToParameter: "__json__"```):
+
+```__json__=%7B%22id%22%3A%223%22%2C%22key%22%3A%226%22%2C%22flag%22%3A9%2C%22reason%22%3A%22world%22%7D```
+
+### window.MagicForm.ajaxify(formElem: HTMLFormElement, hooks: any, opts: any)
 Make a form do AJAX submit when submit button is clicked.
 
 The object ```hooks``` is the same as ```hooks``` in ```window.MagicForm.ajaxSubmit```.
