@@ -1,0 +1,23 @@
+{
+  "name": "magicform",
+  "description": "HTML form serialization and AJAX submitting library",
+  "main": "magicform.js",
+  "authors": [
+    "0xfc <song.fc@gmail.com>"
+  ],
+  "license": "GPL v3",
+  "keywords": [
+    "html",
+    "form",
+    "serialize",
+    "json"
+  ],
+  "homepage": "https://github.com/notsyncing/magicform",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
