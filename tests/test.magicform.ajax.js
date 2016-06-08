@@ -50,8 +50,12 @@ describe("MagicForm", function () {
         
         it("should correctly trigger all hooks during AJAX", function () {
             var d;
+            var f;
             
             MagicForm.ajaxSubmit(testGetForm, {
+                earlyBeforeSubmit: function (formElem) {
+                    f = formElem;
+                },
                 beforeSubmit: function (data) {
                     d = data;
                 }
@@ -62,6 +66,7 @@ describe("MagicForm", function () {
             d.key.should.equal("2");
             d.flag.should.equal(5);
             d.reason.should.equal("hello");
+            f.should.equal(testGetForm);
             
             this.requests.length.should.equal(1);
             this.requests[0].url.should.equal(this.currPath + "/testPath?id=1&key=2&flag=5&reason=hello");

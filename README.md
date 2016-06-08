@@ -68,6 +68,11 @@ AJAX submit a form immediately.
 
 The object ```hooks``` may contains below functions:
 
+##### earlyBeforeSubmit(formElem: HTMLFormElement) -> Boolean
+This function will be called before form data is serialized.
+
+Return a value any other than ```true``` will prevent the form from submitting.
+
 ##### beforeSubmit(data: any | FormData) -> Promise | Boolean
 This function will be called before submitting the form. You can modify data before submitting.
 
