@@ -8,7 +8,8 @@
     var defaultConfigs = {
         ignoreInvisibleFields: false,
         ignoreHiddenFields: false,
-        uncheckedAsFalse: true
+        uncheckedAsFalse: true,
+        denyCORSCredentials: false
     };
     
     var defaultAjaxConfigs = {
@@ -336,6 +337,10 @@
         return new Promise(function (resolve, reject) {
             try {
                 var xhr = new XMLHttpRequest();
+
+                if (!window.MagicForm.configs.denyCORSCredentials) {
+                    xhr.withCredentials = true;
+                }
 
                 xhr.onreadystatechange = function () {
                     if (xhr.readyState === (xhr.DONE || 4)) {

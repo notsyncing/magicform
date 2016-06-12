@@ -109,6 +109,8 @@ where ```configs``` can have:
 
 ```uncheckedAsFalse```: Serialize a unchecked checkbox field as ```false```, or will ignore it, default ```true```
 
+```denyCORSCredentials```: Set ```XMLHttpRequest.withCredentials = false```
+
 ## Browser compatibility
 IE 9+ (<9 may work, not tested)
 
