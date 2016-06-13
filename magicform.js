@@ -436,8 +436,8 @@
         hooks = hooks || {};
         opts = opts || defaultAjaxConfigs;
 
-        if (typeof hooks.earlyBeforeSubmit === "function") {
-            hooks.earlyBeforeSubmit(formElem);
+        if (typeof hooks.beforeSerialize === "function") {
+            hooks.beforeSerialize(formElem);
         }
         
         var serializeData = function () {

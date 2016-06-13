@@ -68,7 +68,7 @@ AJAX submit a form immediately.
 
 The object ```hooks``` may contains below functions:
 
-##### earlyBeforeSubmit(formElem: HTMLFormElement) -> Boolean
+##### beforeSerialize(formElem: HTMLFormElement) -> Boolean
 This function will be called before form data is serialized.
 
 Return a value any other than ```true``` will prevent the form from submitting.
@@ -112,7 +112,7 @@ where ```configs``` can have:
 ```denyCORSCredentials```: Set ```XMLHttpRequest.withCredentials = false```
 
 ## Browser compatibility
-IE 9+ (<9 may work, not tested)
+IE 9+ (< 9 may work, not tested)
 
 Other browsers should be fine.
 

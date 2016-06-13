@@ -53,7 +53,7 @@ describe("MagicForm", function () {
             var f;
             
             MagicForm.ajaxSubmit(testGetForm, {
-                earlyBeforeSubmit: function (formElem) {
+                beforeSerialize: function (formElem) {
                     f = formElem;
                 },
                 beforeSubmit: function (data) {
