@@ -35,12 +35,16 @@ describe("MagicForm", function () {
             MagicForm.parse(testCheckboxFieldsForm, { 
                 useFirst: false,
                 useSecond: false,
-                useThird: true
+                useThird: true,
+                useFourth: "4",
+                useFifth: "2"
             });
             
             testCheckboxFieldsForm.querySelector(".f-useFirst").checked.should.be.exactly(false);
             testCheckboxFieldsForm.querySelector(".f-useSecond").checked.should.be.exactly(false);
             testCheckboxFieldsForm.querySelector(".f-useThird").checked.should.be.exactly(true);
+            testCheckboxFieldsForm.querySelector(".f-useFourth").checked.should.be.exactly(true);
+            testCheckboxFieldsForm.querySelector(".f-useFifth").checked.should.be.exactly(false);
         });
         
         it("should check correct radio buttons in a multiple radio buttons form", function () {

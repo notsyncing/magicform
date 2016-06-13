@@ -30,6 +30,8 @@ describe("MagicForm", function () {
             obj.should.have.property("useFirst", true);
             obj.should.have.property("useSecond", true);
             obj.should.have.property("useThird", false);
+            obj.should.not.have.property("useFourth");
+            obj.should.have.property("useFifth", "5");
         });
         
         it("should not generate fields for unchecked checkboxes when configured", function () {

@@ -44,7 +44,7 @@
                     }
                 }
 
-                return inputElem.checked;
+                return inputElem.getAttribute("value") == null ? inputElem.checked : (inputElem.checked ? inputElem.value : null);
             } else if (type === "radio") {
                 if (!inputElem.checked) {
                     return null;
@@ -194,7 +194,11 @@
 
         if (inputElem instanceof HTMLInputElement) {
             if (type === "checkbox") {
-                inputElem.checked = value;
+                if (inputElem.getAttribute("value") != null) {
+                    inputElem.checked = value == inputElem.getAttribute("value");
+                } else {
+                    inputElem.checked = value;
+                }
             } else if (type === "radio") {
                 inputElem.checked = (inputElem.value == value);
             } else if (type === "number") {
