@@ -102,6 +102,23 @@ describe("MagicForm", function () {
             obj.deep.obj[0].arr[0].should.have.property("flag", "6");
         });
     });
+
+    describe("#serializeSimple", function () {
+        it("should generate multiple fields for multiple same name fields form", function () {
+            var arr = MagicForm.serializeSimple(testArrayFieldsForm);
+            arr.length.should.be.exactly(5);
+            arr[0].should.have.property("name", "arr1[]");
+            arr[0].should.have.property("value", "a");
+            arr[1].should.have.property("name", "arr1[]");
+            arr[1].should.have.property("value", "b");
+            arr[2].should.have.property("name", "arr1[]");
+            arr[2].should.have.property("value", "c");
+            arr[3].should.have.property("name", "arr2[2]");
+            arr[3].should.have.property("value", "d");
+            arr[4].should.have.property("name", "arr2[4]");
+            arr[4].should.have.property("value", "e");
+        });
+    });
     
     describe("#serializePlain", function () {
         it("should generate one field for single field form", function () {
@@ -112,6 +129,11 @@ describe("MagicForm", function () {
         it("should generate multiple fields for multiple field form", function () {
             var str = MagicForm.serializePlain(testMultipleFieldsForm);
             str.should.be.exactly("id=1&key=2&flag=5&reason=hello");
+        });
+
+        it("should generate multiple fields for multiple same name fields form", function () {
+            var str = MagicForm.serializePlain(testArrayFieldsForm);
+            str.should.be.exactly("arr1%5B%5D=a&arr1%5B%5D=b&arr1%5B%5D=c&arr2%5B2%5D=d&arr2%5B4%5D=e");
         });
     });
 });

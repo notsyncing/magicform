@@ -305,7 +305,7 @@
     };
 
     window.MagicForm.serializeSimple = function (formElem) {
-        var obj = {};
+        var arr = [];
         var inputElems = formElem.querySelectorAll("input, select, textarea");
 
         for (var i = 0; i < inputElems.length; i++) {
@@ -315,10 +315,10 @@
                 continue;
             }
             
-            obj[p.name] = p.value;
+            arr.push(p);
         }
 
-        return obj;
+        return arr;
     };
 
     function simpleObjectToQueryString(obj)
@@ -331,6 +331,17 @@
             }
 
             l.push(encodeURIComponent(key) + "=" + encodeURIComponent(obj[key]));
+        }
+
+        return l.join("&");
+    }
+
+    function simpleArrayToQueryString(arr)
+    {
+        var l = [];
+
+        for (var i = 0; i < arr.length; i++) {
+            l.push(encodeURIComponent(arr[i].name) + "=" + encodeURIComponent(arr[i].value));
         }
 
         return l.join("&");
@@ -357,12 +368,12 @@
                 };
 
                 if (method.toLocaleLowerCase() !== "post") {
-                    url += "?" + simpleObjectToQueryString(data);
+                    url += "?" + ((data instanceof Array) ? simpleArrayToQueryString(data) : simpleObjectToQueryString(data));
                     data = null;
                 } else if (typeof data === "string") {
                     data = data;
                 } else if ((window.FormData) && (!(data instanceof FormData))) {
-                    data = simpleObjectToQueryString(data);
+                    data = (data instanceof Array) ? simpleArrayToQueryString(data) : simpleObjectToQueryString(data);
                 }
 
                 xhr.open(method, url, true);

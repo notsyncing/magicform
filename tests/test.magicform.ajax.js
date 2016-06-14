@@ -62,10 +62,14 @@ describe("MagicForm", function () {
             });
             
             (!!d).should.be.true;
-            d.id.should.equal("1");
-            d.key.should.equal("2");
-            d.flag.should.equal(5);
-            d.reason.should.equal("hello");
+            d[0].name.should.equal("id");
+            d[0].value.should.equal("1");
+            d[1].name.should.equal("key");
+            d[1].value.should.equal("2");
+            d[2].name.should.equal("flag");
+            d[2].value.should.equal(5);
+            d[3].name.should.equal("reason");
+            d[3].value.should.equal("hello");
             f.should.equal(testGetForm);
             
             this.requests.length.should.equal(1);
