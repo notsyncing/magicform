@@ -11,7 +11,7 @@
         uncheckedAsFalse: true,
         denyCORSCredentials: false
     };
-    
+
     var defaultAjaxConfigs = {
         serializeAsJsonToParameter: false
     };
@@ -292,11 +292,11 @@
 
         for (var i = 0; i < inputElems.length; i++) {
             var p = serializeInputElementSimple(inputElems.item(i));
-            
+
             if (!p) {
                 continue;
             }
-            
+
             var s = encodeURIComponent(p.name) + "=" + encodeURIComponent(p.value);
             pairs.push(s);
         }
@@ -310,11 +310,11 @@
 
         for (var i = 0; i < inputElems.length; i++) {
             var p = serializeInputElementSimple(inputElems.item(i));
-            
+
             if (!p) {
                 continue;
             }
-            
+
             arr.push(p);
         }
 
@@ -360,7 +360,7 @@
                 xhr.onreadystatechange = function () {
                     if (xhr.readyState === (xhr.DONE || 4)) {
                         if (xhr.status === 200) {
-                            return resolve(xhr.responseText);
+                            return resolve({ response: xhr.responseText, xhr: xhr });
                         } else {
                             return reject(new Error(xhr.status + ": " + xhr.statusText));
                         }
@@ -408,9 +408,9 @@
             } else {
                 iframe.onload = done;
             }
-            
+
             var p;
-            
+
             if (hooks.beforeSubmit) {
                 var data = window.MagicForm.serialize(formElem);
 
@@ -422,9 +422,9 @@
                     p = result;
                 }
             }
-            
+
             formElem.target = iframeId;
-            
+
             if (p) {
                 p.then(function (result) {
                     if (!result) {
@@ -450,13 +450,13 @@
         if (typeof hooks.beforeSerialize === "function") {
             hooks.beforeSerialize(formElem);
         }
-        
+
         var serializeData = function () {
             if (opts.serializeAsJsonToParameter) {
                 var o = window.MagicForm.serialize(formElem);
                 return opts.serializeAsJsonToParameter + "=" + encodeURIComponent(JSON.stringify(o));
             }
-            
+
             return window.MagicForm.serializeSimple(formElem);
         };
 
@@ -473,12 +473,12 @@
         } else {
             data = serializeData();
         }
-        
+
         var p;
 
         if (hooks.beforeSubmit) {
             var result = hooks.beforeSubmit(data);
-            
+
             if (result === false) {
                 return Promise.reject();
             } else if (result instanceof Promise) {
@@ -517,9 +517,9 @@
             opts = opts || defaultAjaxConfigs;
 
             window.MagicForm.ajaxSubmit(formElem, hooks, opts)
-                .then(function (response) {
+                .then(function (data) {
                     if (hooks.success) {
-                        hooks.success(response);
+                        hooks.success(data.response, data.xhr);
                     }
                 })
                 .catch(function (error) {
