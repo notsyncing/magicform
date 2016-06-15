@@ -76,10 +76,10 @@ Return a value any other than ```true``` will prevent the form from submitting.
 ##### beforeSubmit(data: any | FormData) -> Promise | Boolean
 This function will be called before submitting the form. You can modify data before submitting.
 
-Return a value any other than ```true``` or ```Promise.resolve(true)``` will prevent the form from submitting. 
+Return a value any other than ```true``` or ```Promise.resolve(true)``` will prevent the form from submitting.
 
-##### success(response: String)
-This function will be called after the server responds with a 200. ```response``` is the response text.
+##### success(response: String, xhr: XMLHttpRequest)
+This function will be called after the server responds with a 200. ```response``` is the response text, ```xhr``` is the request object.
 
 ##### failed(err: Error)
 This function will be called when any error occured before submit, or the server responds with any code other than 200. ```err``` may be undefined.
