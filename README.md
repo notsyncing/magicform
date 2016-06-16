@@ -3,7 +3,7 @@ HTML form serialization and AJAX submitting library.
 
 This library can serialize a form into JSON object, or deserialize a JSON object to fields of a form.
 
-It also supports AJAX submitting of a form (need Promise support or es6-promise polyfill).
+It also supports AJAX submitting of a form (need Promise support or es6-promise polyfill) and can enable cookies in PhoneGap/Cordova applications.
 
 No jQuery dependency.
 
@@ -110,6 +110,33 @@ where ```configs``` can have:
 ```uncheckedAsFalse```: Serialize a unchecked checkbox field as ```false```, or will ignore it, default ```true```
 
 ```denyCORSCredentials```: Set ```XMLHttpRequest.withCredentials = false```
+
+```alternativeCookieHeaders```: See "Alternative Cookie Headers" section below.
+
+## Alternative Cookie Headers (Needs server-side modification)
+This option is to support local file based WebView applications like PhoneGap/Cordova applications which use cookies to do authentications etc.
+
+Due to limitations of mobile WebViews, for example, on iOS, you can get the ```Set-Cookie``` header from ```XMLHttpRequest``` object, but the cookies are not persisted by WebView, nor be sent with requests; 
+On the other hand, on Android, you cannot get the ```Set-Cookie``` header, but the cookies are persisted and will be sent with requests. 
+```document.cookies``` will be ```null``` on both platforms.
+
+One solution is to use ```window.localStorage```, which needs server to return cookies in some way other than ```Set-Cookie```.
+You can make your server to return something like ```My-Set-Cookie``` headers with cookies to make client can read them through ```XMLHttpRequest.getResponseHeader```, and store them in something like ```localStorage```.
+MagicForm can support this, through the ```alternativeCookieHeaders``` global configuration key.
+
+```alternativeCookieHeaders``` contains following options:
+
+```requestHeader```: If your server needs a custom header to enable cookies sent in another header, set this option to the header name.
+
+```requestValue```: If your server needs a custom header to enable cookies sent in another header, set this option to the header value.
+
+```cookie```: Specify the custom header name of standard header ```Cookie```
+
+```setCookie```: Specify the custom header name of standard header ```Set-Cookie```
+
+```storeTo```: Specify where to store the cookies. Options are ```window.document``` or ```window.localStorage```
+
+If you want to read or modify saved cookies, you can use ```JSON.parse(localStorage.getItem("cookies"))``` or ```localStorage.setItem("cookies", JSON.stringify(obj))```.
 
 ## Browser compatibility
 IE 9+ (< 9 may work, not tested)
