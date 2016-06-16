@@ -456,7 +456,7 @@
         }
     }
 
-    function ajax(method, url, data)
+    function ajax(method, url, data, xhrFields)
     {
         return new Promise(function (resolve, reject) {
             try {
@@ -464,6 +464,16 @@
 
                 if (!window.MagicForm.configs.denyCORSCredentials) {
                     xhr.withCredentials = true;
+                }
+
+                if (xhrFields) {
+                    for (var key in xhrFields) {
+                        if (!xhrFields.hasOwnProperty(key)) {
+                            continue;
+                        }
+
+                        xhr[key] = xhrFields[key];
+                    }
                 }
 
                 xhr.onreadystatechange = function () {
@@ -643,5 +653,14 @@
 
             return false;
         });
+    };
+
+    window.MagicForm.ajax = function (opts) {
+        var method = opts.method || "get";
+        var url = opts.url;
+        var xhrFields = opts.xhrFields || {};
+        var data = opts.data;
+        
+        return ajax(method, url, data, xhrFields);
     };
 })();
