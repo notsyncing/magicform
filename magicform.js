@@ -9,7 +9,14 @@
         ignoreInvisibleFields: false,
         ignoreHiddenFields: false,
         uncheckedAsFalse: true,
-        denyCORSCredentials: false
+        denyCORSCredentials: false,
+        alternativeCookieHeaders: {
+            requestHeader: null,
+            requestValue: null,
+            cookie: null,
+            setCookie: null,
+            storeTo: null
+        }
     };
 
     var defaultAjaxConfigs = {
@@ -347,7 +354,121 @@
         return l.join("&");
     }
 
-    function ajax(method, url, data)
+    function processReceivedAlternativeCookieHeaders(xhr)
+    {
+        var ch = window.MagicForm.configs.alternativeCookieHeaders;
+
+        if ((!ch) || (!ch.storeTo) || (!ch.setCookie)) {
+            return;
+        }
+
+        var headers = xhr.getAllResponseHeaders();
+
+        if (!headers) {
+            return;
+        }
+
+        headers = headers.split("\r\n");
+        var setCookieHeader;
+        var setCookieStart = ch.setCookie + ": ";
+
+        for (var i = 0; i < headers.length; i++) {
+            if (headers[i].indexOf(setCookieStart) === 0) {
+                setCookieHeader = headers[i].substring(setCookieStart.length);
+                break;
+            }
+        }
+
+        if (!setCookieHeader) {
+            return;
+        }
+
+        var setCookieHeaders = [];
+        var l = setCookieHeader.split(", ");
+
+        for (var i = 0; i < l.length; i++) {
+            if ((i > 0) && (l[i].indexOf("=") < 0)) {
+                setCookieHeaders[setCookieHeaders.length - 1] += ", " + l[i];
+            } else {
+                setCookieHeaders.push(l[i]);
+            }
+        }
+
+        if (ch.storeTo === window.document) {
+            for (var i = 0; i < setCookieHeaders.length; i++) {
+                document.cookie = setCookieHeaders[i];
+            }
+        } else if (ch.storeTo === window.localStorage) {
+            var cookies = JSON.parse(localStorage.getItem("cookies") || "{}");
+
+            for (var i = 0; i < setCookieHeaders.length; i++) {
+                var cl = setCookieHeaders[i].split("; ");
+                var cookieData = {};
+
+                for (var j = 0; j < cl.length; j++) {
+                    var kv = cl[j].split("=");
+
+                    if (j === 0) {
+                        cookieData.name = kv[0];
+                        cookieData.value = kv[1];
+                    } else {
+                        cookieData[kv[0]] = kv[1];
+                    }
+                }
+
+                cookies[cookieData.name] = cookieData.value;
+
+                if (cookieData["max-age"]) {
+                    if (cookieData["max-age"] == 0) {
+                        delete cookies[cookieData.name];
+                    } else if (cookieData["max-age"] < 0) {
+                        // TODO: Implement temporary cookie!
+                    }
+                } else if (cookieData.expires) {
+                    var expireDate = Date.parse(cookieData.expires);
+                    var nowDate = new Date();
+
+                    if (expireDate < nowDate) {
+                        delete cookies[cookieData.name];
+                    }
+                }
+            }
+
+            localStorage.setItem("cookies", JSON.stringify(cookies));
+        }
+    }
+
+    function processSendAlternativeCookieHeaders(xhr)
+    {
+        var ch = window.MagicForm.configs.alternativeCookieHeaders;
+
+        if ((!ch) || (!ch.storeTo) || (!ch.cookie)) {
+            return;
+        }
+
+        if (ch.requestHeader) {
+            xhr.setRequestHeader(ch.requestHeader, ch.requestValue);
+        }
+
+        if (ch.storeTo === window.document) {
+            xhr.setRequestHeader(ch.cookie, document.cookie);
+        } else if (ch.storeTo === window.localStorage) {
+            var cookies = JSON.parse(localStorage.getItem("cookies") || "{}");
+            var cookieList = [];
+
+            for (var key in cookies) {
+                if (!cookies.hasOwnProperty(key)) {
+                    continue;
+                }
+
+                cookieList.push(key + "=" + cookies[key]);
+            }
+
+            xhr.setRequestHeader(ch.cookie, cookieList.join("; "));
+        }
+    }
+
+    function ajax(method, url, data, xhrFields)
     {
         return new Promise(function (resolve, reject) {
             try {
@@ -357,10 +478,28 @@
                     xhr.withCredentials = true;
                 }
 
+                if (xhrFields) {
+                    for (var key in xhrFields) {
+                        if (!xhrFields.hasOwnProperty(key)) {
+                            continue;
+                        }
+
+                        xhr[key] = xhrFields[key];
+                    }
+                }
+
                 xhr.onreadystatechange = function () {
                     if (xhr.readyState === (xhr.DONE || 4)) {
                         if (xhr.status === 200) {
-                            return resolve({ response: xhr.responseText, xhr: xhr });
+                            processReceivedAlternativeCookieHeaders(xhr);
+
+                            var data = xhr.responseText;
+
+                            if (xhr.getResponseHeader("Content-Type") == "application/json") {
+                                data = JSON.parse(data);
+                            }
+
+                            return resolve({ response: data, xhr: xhr });
                         } else {
                             return reject(new Error(xhr.status + ": " + xhr.statusText));
                         }
@@ -377,6 +516,8 @@
                 }
 
                 xhr.open(method, url, true);
+
+                processSendAlternativeCookieHeaders(xhr);
 
                 if (data) {
                     xhr.send(data);
@@ -530,5 +671,14 @@
 
             return false;
         });
+    };
+
+    window.MagicForm.ajax = function (opts) {
+        var method = opts.method || "get";
+        var url = opts.url;
+        var xhrFields = opts.xhrFields || {};
+        var data = opts.data;
+
+        return ajax(method, url, data, xhrFields);
     };
 })();

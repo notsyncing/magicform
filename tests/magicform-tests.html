@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 
 <html>
-    
+
 <head>
     <meta charset="utf-8">
     <title>Mocha Tests</title>
@@ -10,19 +10,19 @@
 
 <body>
     <div id="mocha"></div>
-    
+
     <div style="display: none;">
         <form id="testSingleFieldForm">
             <input type="text" class="f-key" name="key" value="2">
         </form>
-        
+
         <form id="testMultipleFieldsForm">
             <input type="hidden" class="f-id" name="id" value="1">
             <input type="text" class="f-key" name="key" value="2">
             <input type="number" class="f-flag" name="flag" value="5">
             <input type="text" class="f-reason" name="reason" value="hello">
         </form>
-        
+
         <form id="testCheckboxFieldsForm">
             <input type="checkbox" class="f-useFirst" name="useFirst" checked="checked">
             <input type="checkbox" class="f-useSecond" name="useSecond" checked="checked">
@@ -30,29 +30,29 @@
             <input type="checkbox" class="f-useFourth" name="useFourth" value="4">
             <input type="checkbox" class="f-useFifth" name="useFifth" value="5" checked="checked">
         </form>
-        
+
         <form id="testRadioFieldsForm">
             <input type="radio" class="f-useFirst" name="use" value="first" checked="checked">
             <input type="radio" class="f-useSecond" name="use" value="second">
             <input type="radio" class="f-forFirst" name="for" value="1">
             <input type="radio" class="f-forSecond" name="for" value="2" checked="checked">
         </form>
-        
+
         <form id="testDeepObjectFieldsForm">
             <input type="text" class="f-field1" name="field1" value="a">
             <input type="text" class="f-field2-inner" name="field2.inner" value="b">
             <input type="text" class="f-field3-inner-body" name="field3.inner.body" value="c">
         </form>
-        
+
         <form id="testArrayFieldsForm">
             <input type="text" class="f-arr1-0" name="arr1[]" value="a">
             <input type="text" class="f-arr1-1" name="arr1[]" value="b">
             <input type="text" class="f-arr1-2" name="arr1[]" value="c">
-            
+
             <input type="text" class="f-arr2-2" name="arr2[2]" value="d">
             <input type="text" class="f-arr2-4" name="arr2[4]" value="e">
         </form>
-        
+
         <form id="testComplexFieldsForm">
             <input type="text" class="f-arr1-0-name" name="arr1[].name" value="a">
             <input type="text" class="f-arr1-0-value" name="arr1[].value" value="1">
@@ -60,22 +60,36 @@
             <input type="text" class="f-arr1-1-value" name="arr1[].value" value="2">
             <input type="text" class="f-arr1-2-name" name="arr1[].name" value="c">
             <input type="text" class="f-arr1-2-value" name="arr1[].value" value="3">
-            
+
             <input type="text" class="f-arr2-2-name" name="arr2[2].name" value="d">
             <input type="text" class="f-arr2-2-value" name="arr2[2].value" value="4">
             <input type="text" class="f-arr2-4-name" name="arr2[4].name" value="e">
             <input type="text" class="f-arr2-4-value" name="arr2[4].value" value="5">
-            
+
             <input type="text" class="f-deep-obj-arr-flag" name="deep.obj[].arr[].flag" value="6">
         </form>
-        
+
         <form id="testGetForm" method="get" action="testPath">
             <input type="hidden" class="f-id" name="id" value="1">
             <input type="text" class="f-key" name="key" value="2">
             <input type="number" class="f-flag" name="flag" value="5">
             <input type="text" class="f-reason" name="reason" value="hello">
+
+            <input type="submit" class="f-submit">
         </form>
-        
+
+        <form id="testGetForm2" method="get" action="testPath2">
+            <input type="hidden" class="f-id" name="id" value="1">
+
+            <input type="submit" class="f-submit">
+        </form>
+
+        <form id="testGetForm3" method="get" action="testPath3">
+            <input type="hidden" class="f-id" name="id" value="1">
+
+            <input type="submit" class="f-submit">
+        </form>
+
         <form id="testPostForm" method="post" action="testPath">
             <input type="hidden" class="f-id" name="id" value="3">
             <input type="text" class="f-key" name="key" value="6">
