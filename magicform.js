@@ -481,7 +481,13 @@
                         if (xhr.status === 200) {
                             processReceivedAlternativeCookieHeaders(xhr);
 
-                            return resolve(xhr.responseText);
+                            var data = xhr.responseText;
+
+                            if (xhr.getResponseHeader("Content-Type") == "application/json") {
+                                data = JSON.parse(data);
+                            }
+
+                            return resolve(data);
                         } else {
                             return reject(new Error(xhr.status + ": " + xhr.statusText));
                         }
