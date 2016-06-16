@@ -400,10 +400,10 @@
                     }
                 }
 
+                cookies[cookieData.name] = cookieData.value;
+
                 if (cookieData["max-age"]) {
-                    if (cookieData["max-age"] > 0) {
-                        cookies[cookieData.name] = cookieData.value;
-                    } else if (cookieData["max-age"] == 0) {
+                    if (cookieData["max-age"] == 0) {
                         delete cookies[cookieData.name];
                     } else if (cookieData["max-age"] < 0) {
                         // TODO: Implement temporary cookie!
@@ -414,11 +414,7 @@
 
                     if (expireDate < nowDate) {
                         delete cookies[cookieData.name];
-                    } else {
-                        cookies[cookieData.name] = cookieData.value;
                     }
-                } else {
-                    cookies[cookieData.name] = cookieData.value;
                 }
             }
 
