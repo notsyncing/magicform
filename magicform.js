@@ -9,7 +9,14 @@
         ignoreInvisibleFields: false,
         ignoreHiddenFields: false,
         uncheckedAsFalse: true,
-        denyCORSCredentials: false
+        denyCORSCredentials: false,
+        alternativeCookieHeaders: {
+            requestHeader: null,
+            requestValue: null,
+            cookie: null,
+            setCookie: null,
+            storeTo: null
+        }
     };
     
     var defaultAjaxConfigs = {
@@ -347,6 +354,108 @@
         return l.join("&");
     }
 
+    function processReceivedAlternativeCookieHeaders(xhr)
+    {
+        var ch = window.MagicForm.configs.alternativeCookieHeaders;
+
+        if ((!ch) || (!ch.storeTo) || (!ch.setCookie)) {
+            return;
+        }
+
+        var headers = xhr.getAllResponseHeaders();
+
+        if (!headers) {
+            return;
+        }
+
+        headers = headers.split("\r\n");
+        var setCookieHeaders = [];
+        var setCookieStart = ch.setCookie + ": ";
+
+        for (var i = 0; i < headers.length; i++) {
+            if (headers[i].indexOf(setCookieStart) === 0) {
+                setCookieHeaders.push(headers[i].substring(setCookieStart.length));
+            }
+        }
+
+        if (ch.storeTo === window.document) {
+            for (var i = 0; i < setCookieHeaders.length; i++) {
+                document.cookie = setCookieHeaders[i];
+            }
+        } else if (ch.storeTo === window.localStorage) {
+            var cookies = JSON.parse(localStorage.getItem("cookies") || "{}");
+
+            for (var i = 0; i < setCookieHeaders.length; i++) {
+                var cl = setCookieHeaders[i].split("; ");
+                var cookieData = {};
+
+                for (var j = 0; j < cl.length; j++) {
+                    var kv = cl[j].split("=");
+
+                    if (j === 0) {
+                        cookieData.name = kv[0];
+                        cookieData.value = kv[1];
+                    } else {
+                        cookieData[kv[0]] = kv[1];
+                    }
+                }
+
+                if (cookieData["max-age"]) {
+                    if (cookieData["max-age"] > 0) {
+                        cookies[cookieData.name] = cookieData.value;
+                    } else if (cookieData["max-age"] == 0) {
+                        delete cookies[cookieData.name];
+                    } else if (cookieData["max-age"] < 0) {
+                        // TODO: Implement temporary cookie!
+                    }
+                } else if (cookieData.expires) {
+                    var expireDate = Date.parse(cookieData.expires);
+                    var nowDate = new Date();
+
+                    if (expireDate < nowDate) {
+                        delete cookies[cookieData.name];
+                    } else {
+                        cookies[cookieData.name] = cookieData.value;
+                    }
+                } else {
+                    cookies[cookieData.name] = cookieData.value;
+                }
+            }
+
+            localStorage.setItem("cookies", JSON.stringify(cookies));
+        }
+    }
+
+    function processSendAlternativeCookieHeaders(xhr)
+    {
+        var ch = window.MagicForm.configs.alternativeCookieHeaders;
+
+        if ((!ch) || (!ch.storeTo) || (!ch.cookie)) {
+            return;
+        }
+
+        if (ch.requestHeader) {
+            xhr.setRequestHeader(ch.requestHeader, ch.requestValue);
+        }
+
+        if (ch.storeTo === window.document) {
+            xhr.setRequestHeader(ch.cookie, document.cookie);
+        } else if (ch.storeTo === window.localStorage) {
+            var cookies = JSON.parse(localStorage.getItem("cookies") || "{}");
+            var cookieList = [];
+
+            for (var key in cookies) {
+                if (!cookies.hasOwnProperty(key)) {
+                    continue;
+                }
+
+                cookieList.push(key + "=" + cookies[key]);
+            }
+
+            xhr.setRequestHeader(ch.cookie, cookieList.join("; "));
+        }
+    }
+
     function ajax(method, url, data)
     {
         return new Promise(function (resolve, reject) {
@@ -360,6 +469,8 @@
                 xhr.onreadystatechange = function () {
                     if (xhr.readyState === (xhr.DONE || 4)) {
                         if (xhr.status === 200) {
+                            processReceivedAlternativeCookieHeaders(xhr);
+
                             return resolve(xhr.responseText);
                         } else {
                             return reject(new Error(xhr.status + ": " + xhr.statusText));
@@ -377,6 +488,8 @@
                 }
 
                 xhr.open(method, url, true);
+
+                processSendAlternativeCookieHeaders(xhr);
 
                 if (data) {
                     xhr.send(data);
