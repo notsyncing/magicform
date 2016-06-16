@@ -4,20 +4,19 @@ var testPostForm = document.getElementById("testPostForm");
 describe("MagicForm", function () {
     beforeEach(function () {
         MagicForm.setConfigs();
-        
-        this.xhr = sinon.useFakeXMLHttpRequest();
-        this.requests = [];
-        this.xhr.onCreate = function (xhr) {
-            this.requests.push(xhr);
-        }.bind(this);
+
+        this.server = sinon.fakeServer.create();
+
+        var testGetFormResp = "world";
+        this.server.respondWith(testGetFormResp);
+        this.requests = this.server.requests;
         
         this.currPath = window.location.href;
         this.currPath = this.currPath.substring(0, this.currPath.lastIndexOf("/"));
     });
     
     afterEach(function () {
-        this.requests = [];
-        this.xhr.restore();
+        this.server.restore();
     });
     
     describe("#ajaxSubmit", function () {
@@ -60,7 +59,7 @@ describe("MagicForm", function () {
                     d = data;
                 }
             });
-            
+
             (!!d).should.be.true;
             d[0].name.should.equal("id");
             d[0].value.should.equal("1");
@@ -76,6 +75,50 @@ describe("MagicForm", function () {
             this.requests[0].url.should.equal(this.currPath + "/testPath?id=1&key=2&flag=5&reason=hello");
             this.requests[0].method.should.equal("get");
             (!!this.requests[0].requestBody).should.be.false;
+        });
+    });
+
+    describe("#ajaxify", function () {
+        it("should correctly trigger all hooks during AJAX submit", function (done) {
+            var d;
+            var f;
+            var r;
+            var _this = this;
+            
+            MagicForm.ajaxify(testGetForm, {
+                beforeSerialize: function (formElem) {
+                    f = formElem;
+                },
+                beforeSubmit: function (data) {
+                    d = data;
+                },
+                success: function (response) {
+                    r = response;
+
+                    (!!d).should.be.true;
+                    d[0].name.should.equal("id");
+                    d[0].value.should.equal("1");
+                    d[1].name.should.equal("key");
+                    d[1].value.should.equal("2");
+                    d[2].name.should.equal("flag");
+                    d[2].value.should.equal(5);
+                    d[3].name.should.equal("reason");
+                    d[3].value.should.equal("hello");
+                    f.should.equal(testGetForm);
+                    r.should.equal("world");
+                    
+                    _this.requests.length.should.equal(1);
+                    _this.requests[0].url.should.equal(_this.currPath + "/testPath?id=1&key=2&flag=5&reason=hello");
+                    _this.requests[0].method.should.equal("get");
+                    (!!_this.requests[0].requestBody).should.be.false;
+
+                    done();
+                }
+            });
+
+            testGetForm.querySelector(".f-submit").click();
+
+            this.server.respond();
         });
     });
 });
