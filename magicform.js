@@ -369,12 +369,28 @@
         }
 
         headers = headers.split("\r\n");
-        var setCookieHeaders = [];
+        var setCookieHeader;
         var setCookieStart = ch.setCookie + ": ";
 
         for (var i = 0; i < headers.length; i++) {
             if (headers[i].indexOf(setCookieStart) === 0) {
-                setCookieHeaders.push(headers[i].substring(setCookieStart.length));
+                setCookieHeader = headers[i].substring(setCookieStart.length);
+                break;
+            }
+        }
+
+        if (!setCookieHeader) {
+            return;
+        }
+
+        var setCookieHeaders = [];
+        var l = setCookieHeader.split(", ");
+
+        for (var i = 0; i < l.length; i++) {
+            if ((i > 0) && (l[i].indexOf("=") < 0)) {
+                setCookieHeaders[setCookieHeaders.length - 1] += ", " + l[i];
+            } else {
+                setCookieHeaders.push(l[i]);
             }
         }
 
