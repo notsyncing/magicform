@@ -589,7 +589,9 @@
         opts = opts || defaultAjaxConfigs;
 
         if (typeof hooks.beforeSerialize === "function") {
-            hooks.beforeSerialize(formElem);
+            if (hooks.beforeSerialize(formElem) === false) {
+                return;
+            }
         }
 
         var serializeData = function () {
