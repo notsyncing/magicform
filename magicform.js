@@ -228,6 +228,7 @@
     function parseInputElement(arrayCounters, inputElem, data)
     {
         var name = inputElem.getAttribute("name");
+        var rawName = name;
 
         if ((!name) || (name.length <= 0)) {
             return;
@@ -243,10 +244,26 @@
             }
 
             arrayCounters[name]++;
-            name = name.substring(0, unindexedArrayEnd) + "[" + arrayCounters[name] + "]" + name.substring(unindexedArrayEnd + 2);
+            name = name.substring(0, unindexedArrayEnd) + "[" +
+                arrayCounters[name] + "]" + name.substring(unindexedArrayEnd + 2);
         }
 
-        value = (new Function("data", "return data." + name + ";"))(data);
+        if (data instanceof Array) {
+            for (var i = 0; i < data.length; i++) {
+                if (data[i].name === rawName) {
+                    value = data[i].value;
+                }
+            }
+        } else {
+            var split = ".";
+
+            if (name.indexOf("[") === 0) {
+                split = "";
+            }
+
+            value = (new Function("data", "return data" + split + name + ";"))(data);
+        }
+
         setInputElementValue(inputElem, value);
     }
 
@@ -584,6 +601,7 @@
         var method = formElem.method || "get";
         var url = formElem.action;
         var data;
+        var dataIsMultipart = false;
 
         hooks = hooks || {};
         opts = opts || defaultAjaxConfigs;
@@ -603,18 +621,12 @@
             return window.MagicForm.serializeSimple(formElem);
         };
 
+        data = serializeData();
+
         if (method.toLowerCase() === "post") {
             if (formElem.enctype === "multipart/form-data") {
-                if (window.FormData) {
-                    data = new FormData(formElem);
-                } else {
-                    return iframeUpload(formElem, hooks);
-                }
-            } else {
-                data = serializeData();
+                dataIsMultipart = true;
             }
-        } else {
-            data = serializeData();
         }
 
         var p;
@@ -626,20 +638,34 @@
                 return Promise.reject();
             } else if (result instanceof Promise) {
                 p = result;
+            } else {
+                p = Promise.resolve(true);
             }
+        } else {
+            p = Promise.resolve(true);
         }
 
-        if (p) {
-            return p.then(function (result) {
-                if (!result) {
-                    return Promise.reject();
-                } else {
-                    return ajax(method, url, data);
+        var oldData;
+
+        return p.then(function (result) {
+            if (!result) {
+                return Promise.reject();
+            } else {
+                if (dataIsMultipart) {
+                    oldData = serializeData();
+                    MagicForm.parse(formElem, data);
+
+                    if (window.FormData) {
+                        data = new FormData(formElem);
+                        MagicForm.parse(formElem, oldData);
+                    } else {
+                        return iframeUpload(formElem, hooks);
+                    }
                 }
-            });
-        } else {
-            return ajax(method, url, data);
-        }
+
+                return ajax(method, url, data);
+            }
+        });
     };
 
     function addEventListener(elem, eventName, handler)
