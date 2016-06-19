@@ -608,7 +608,7 @@
 
         if (typeof hooks.beforeSerialize === "function") {
             if (hooks.beforeSerialize(formElem) === false) {
-                return;
+                return Promise.reject();
             }
         }
 
