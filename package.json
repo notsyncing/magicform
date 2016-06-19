@@ -1,6 +1,6 @@
 {
   "name": "magicform",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "HTML form serialization and AJAX submitting library",
   "author": "0xfc <song.fc@gmail.com>",
   "dependencies": {
