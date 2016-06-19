@@ -200,6 +200,10 @@
         }
 
         if (inputElem instanceof HTMLInputElement) {
+            if (type === "file") {
+                return;
+            }
+
             if (type === "checkbox") {
                 if (inputElem.getAttribute("value") != null) {
                     inputElem.checked = value == inputElem.getAttribute("value");
