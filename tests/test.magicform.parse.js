@@ -4,6 +4,7 @@ var testCheckboxFieldsForm = document.getElementById("testCheckboxFieldsForm");
 var testRadioFieldsForm = document.getElementById("testRadioFieldsForm");
 var testDeepObjectFieldsForm = document.getElementById("testDeepObjectFieldsForm");
 var testArrayFieldsForm = document.getElementById("testArrayFieldsForm");
+var testDeepArrayFieldsForm = document.getElementById("testDeepArrayFieldsForm");
 var testComplexFieldsForm = document.getElementById("testComplexFieldsForm");
 
 describe("MagicForm", function () {
@@ -103,7 +104,7 @@ describe("MagicForm", function () {
             testDeepObjectFieldsForm.querySelector(".f-field3-inner-body").value.should.be.exactly("f");
         });
 
-        it("should put correct values to a array fields form", function () {
+        it("should put correct values to an array fields form", function () {
             MagicForm.parse(testArrayFieldsForm, {
                 arr1: [ "d", "e", "f" ],
                 arr2: [ "g", "h", "i", "j", "k" ]
@@ -115,6 +116,42 @@ describe("MagicForm", function () {
 
             testArrayFieldsForm.querySelector(".f-arr2-2").value.should.be.exactly("i");
             testArrayFieldsForm.querySelector(".f-arr2-4").value.should.be.exactly("k");
+        });
+
+        it("should put correct values in an array to a deep array fields form", function () {
+            MagicForm.parse(testDeepArrayFieldsForm, [
+                {
+                    name: "arr[].name",
+                    value: "d"
+                },
+                {
+                    name: "arr[].value",
+                    value: "4"
+                },
+                {
+                    name: "arr[].name",
+                    value: "e"
+                },
+                {
+                    name: "arr[].value",
+                    value: "5"
+                },
+                {
+                    name: "arr[].name",
+                    value: "f"
+                },
+                {
+                    name: "arr[].value",
+                    value: "6"
+                }
+            ]);
+
+            testDeepArrayFieldsForm.querySelector(".f-arr-0-name").value.should.be.exactly("d");
+            testDeepArrayFieldsForm.querySelector(".f-arr-0-value").value.should.be.exactly("4");
+            testDeepArrayFieldsForm.querySelector(".f-arr-1-name").value.should.be.exactly("e");
+            testDeepArrayFieldsForm.querySelector(".f-arr-1-value").value.should.be.exactly("5");
+            testDeepArrayFieldsForm.querySelector(".f-arr-2-name").value.should.be.exactly("f");
+            testDeepArrayFieldsForm.querySelector(".f-arr-2-value").value.should.be.exactly("6");
         });
 
         it("should put correct values to a complex fields form", function () {

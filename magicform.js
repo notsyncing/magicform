@@ -240,25 +240,36 @@
 
         var value;
 
-        while (name.indexOf("[]") >= 0) {
-            var unindexedArrayEnd = name.indexOf("[]");
-
-            if (arrayCounters[name] === undefined) {
-                arrayCounters[name] = -1;
-            }
-
-            arrayCounters[name]++;
-            name = name.substring(0, unindexedArrayEnd) + "[" +
-                arrayCounters[name] + "]" + name.substring(unindexedArrayEnd + 2);
-        }
-
         if (data instanceof Array) {
+            var skip = 0;
+
             for (var i = 0; i < data.length; i++) {
                 if (data[i].name === rawName) {
+                    if (!arrayCounters[rawName]) {
+                        arrayCounters[rawName] = 0;
+                    } else if (skip < arrayCounters[rawName]) {
+                        skip++;
+                        continue;
+                    }
+
                     value = data[i].value;
+                    arrayCounters[rawName]++;
+                    break;
                 }
             }
         } else {
+            while (name.indexOf("[]") >= 0) {
+                var unindexedArrayEnd = name.indexOf("[]");
+
+                if (arrayCounters[name] === undefined) {
+                    arrayCounters[name] = -1;
+                }
+
+                arrayCounters[name]++;
+                name = name.substring(0, unindexedArrayEnd) + "[" +
+                    arrayCounters[name] + "]" + name.substring(unindexedArrayEnd + 2);
+            }
+
             var split = ".";
 
             if (name.indexOf("[") === 0) {
