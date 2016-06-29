@@ -369,6 +369,10 @@
                 continue;
             }
 
+            if (obj[key] === undefined) {
+                continue;
+            }
+
             l.push(encodeURIComponent(key) + "=" + encodeURIComponent(obj[key]));
         }
 
