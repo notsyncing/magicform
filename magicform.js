@@ -631,7 +631,7 @@
 
         if (typeof hooks.beforeSerialize === "function") {
             if (hooks.beforeSerialize(formElem) === false) {
-                return Promise.reject();
+                return Promise.reject(false);
             }
         }
 
@@ -658,7 +658,7 @@
             var result = hooks.beforeSubmit(data);
 
             if (result === false) {
-                return Promise.reject();
+                return Promise.reject(false);
             } else if (result instanceof Promise) {
                 p = result;
             } else {
@@ -715,6 +715,10 @@
                     }
                 })
                 .catch(function (error) {
+                    if (error === false) {
+                        return;
+                    }
+
                     if (hooks.failed) {
                         hooks.failed(error);
                     }
