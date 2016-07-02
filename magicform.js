@@ -64,7 +64,11 @@
                 return inputElem.value;
             }
         } else if (inputElem instanceof HTMLSelectElement) {
-            return inputElem.options[inputElem.selectedIndex].value;
+            if ((inputElem.options.length > 0) && (inputElem.selectedIndex > 0)) {
+                return inputElem.options[inputElem.selectedIndex].value;
+            } else {
+                return null;
+            }
         } else if (inputElem instanceof HTMLTextAreaElement) {
             return inputElem.value;
         }
