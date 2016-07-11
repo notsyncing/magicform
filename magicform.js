@@ -504,7 +504,9 @@
                 cookieList.push(key + "=" + cookies[key]);
             }
 
-            xhr.setRequestHeader(ch.cookie, cookieList.join("; "));
+            if (cookieList.length > 0) {
+                xhr.setRequestHeader(ch.cookie, cookieList.join("; "));
+            }
         }
     }
 
