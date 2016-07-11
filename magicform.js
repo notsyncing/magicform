@@ -64,7 +64,7 @@
                 return inputElem.value;
             }
         } else if (inputElem instanceof HTMLSelectElement) {
-            if ((inputElem.options.length > 0) && (inputElem.selectedIndex > 0)) {
+            if ((inputElem.options.length > 0) && (inputElem.selectedIndex >= 0)) {
                 return inputElem.options[inputElem.selectedIndex].value;
             } else {
                 return null;
