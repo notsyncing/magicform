@@ -377,7 +377,13 @@
                 continue;
             }
 
-            l.push(encodeURIComponent(key) + "=" + encodeURIComponent(obj[key]));
+            if (obj[key] instanceof Array) {
+                for (var i = 0; i < obj[key].length; i++) {
+                    l.push(encodeURIComponent(key) + "=" + encodeURIComponent(obj[key][i]));
+                }
+            } else {
+                l.push(encodeURIComponent(key) + "=" + encodeURIComponent(obj[key]));
+            }
         }
 
         return l.join("&");
