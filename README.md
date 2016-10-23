@@ -93,6 +93,9 @@ If this is set to ```false```, ```null``` or ```undefined```, it will be ignored
 __json__=%7B%22id%22%3A%223%22%2C%22key%22%3A%226%22%2C%22flag%22%3A9%2C%22reason%22%3A%22world%22%7D
 ```
 
+##### url: String
+If the form doesn't contain an ```action``` property, then this will be used as target URL.
+
 ### window.MagicForm.ajaxify(formElem: HTMLFormElement, hooks: any, opts: any)
 Make a form do AJAX submit when submit button is clicked.
 
@@ -116,8 +119,8 @@ where ```configs``` can have:
 ## Alternative Cookie Headers (Needs server-side modification)
 This option is to support local file based WebView applications like PhoneGap/Cordova applications which use cookies to do authentications etc.
 
-Due to limitations of mobile WebViews, for example, on iOS, you can get the ```Set-Cookie``` header from ```XMLHttpRequest``` object, but the cookies are not persisted by WebView, nor be sent with requests; 
-On the other hand, on Android, you cannot get the ```Set-Cookie``` header, but the cookies are persisted and will be sent with requests. 
+Due to limitations of mobile WebViews, for example, on iOS, you can get the ```Set-Cookie``` header from ```XMLHttpRequest``` object, but the cookies are not persisted by WebView, nor be sent with requests;
+On the other hand, on Android, you cannot get the ```Set-Cookie``` header, but the cookies are persisted and will be sent with requests.
 ```document.cookies``` will be ```null``` on both platforms.
 
 One solution is to use ```window.localStorage```, which needs server to return cookies in some way other than ```Set-Cookie```.
