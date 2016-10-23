@@ -630,7 +630,7 @@
 
     window.MagicForm.ajaxSubmit = function (formElem, hooks, opts) {
         var method = formElem.method || "get";
-        var url = formElem.action;
+        var url = formElem.action || opts.url;
         var data;
         var dataIsMultipart = false;
 
