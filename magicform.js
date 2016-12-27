@@ -549,7 +549,9 @@
 
                             return resolve({ response: data, xhr: xhr });
                         } else {
-                            return reject(new Error(xhr.status + ": " + xhr.statusText));
+                            return reject(new Error(xhr.status + ": " + xhr.statusText + "\n > when accessing " + url +
+                                " with " + method + " data " + JSON.stringify(data) + " xhrFields " +
+                                JSON.stringify(xhrFields)));
                         }
                     }
                 };
