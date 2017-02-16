@@ -5,6 +5,12 @@ var testPostForm = document.getElementById("testPostForm");
 
 describe("MagicForm", function () {
     beforeEach(function () {
+        var forms = document.getElementsByTagName("form");
+
+        for (var i = 0; i < forms.length; i++) {
+            forms[i].reset();
+        }
+
         MagicForm.setConfigs();
 
         localStorage.removeItem("cookies");
@@ -38,31 +44,44 @@ describe("MagicForm", function () {
     });
 
     describe("#ajaxSubmit", function () {
-        it("should correctly submit a simple GET form with AJAX", function () {
+        it("should correctly submit a simple GET form with AJAX", function (done) {
             MagicForm.ajaxSubmit(testGetForm);
 
-            this.requests.length.should.equal(1);
-            this.requests[0].url.should.equal(this.currPath + "/testPath?id=1&key=2&flag=5&reason=hello");
-            this.requests[0].method.should.equal("get");
-            (!!this.requests[0].requestBody).should.be.false;
+            var _this = this;
+
+            setTimeout(function () {
+                _this.requests.length.should.equal(1);
+                _this.requests[0].url.should.equal(_this.currPath + "/testPath?id=1&key=2&flag=5&reason=hello");
+                _this.requests[0].method.should.equal("get");
+                (!!_this.requests[0].requestBody).should.be.false;
+                done();
+            }, 0);
         });
 
         it("should correctly submit a simple POST form with AJAX", function () {
             MagicForm.ajaxSubmit(testPostForm);
 
-            this.requests.length.should.equal(1);
-            this.requests[0].url.should.equal(this.currPath + "/testPath");
-            this.requests[0].method.should.equal("post");
-            this.requests[0].requestBody.should.equal("id=3&key=6&flag=9&reason=world");
+            var _this = this;
+
+            setTimeout(function () {
+                _this.requests.length.should.equal(1);
+                _this.requests[0].url.should.equal(_this.currPath + "/testPath");
+                _this.requests[0].method.should.equal("post");
+                _this.requests[0].requestBody.should.equal("id=3&key=6&flag=9&reason=world");
+            }, 0);
         });
 
         it("should correctly serialize and submit a simple POST form with AJAX", function () {
             MagicForm.ajaxSubmit(testPostForm, null, { serializeAsJsonToParameter: "__json__" });
 
-            this.requests.length.should.equal(1);
-            this.requests[0].url.should.equal(this.currPath + "/testPath");
-            this.requests[0].method.should.equal("post");
-            this.requests[0].requestBody.should.equal("__json__=%7B%22id%22%3A%223%22%2C%22key%22%3A%226%22%2C%22flag%22%3A9%2C%22reason%22%3A%22world%22%7D");
+            var _this = this;
+
+            setTimeout(function () {
+                _this.requests.length.should.equal(1);
+                _this.requests[0].url.should.equal(_this.currPath + "/testPath");
+                _this.requests[0].method.should.equal("post");
+                _this.requests[0].requestBody.should.equal("__json__=%7B%22id%22%3A%223%22%2C%22key%22%3A%226%22%2C%22flag%22%3A9%2C%22reason%22%3A%22world%22%7D");
+            }, 0);
         });
 
         it("should correctly trigger all hooks during AJAX", function () {
@@ -78,21 +97,25 @@ describe("MagicForm", function () {
                 }
             });
 
-            (!!d).should.be.true;
-            d[0].name.should.equal("id");
-            d[0].value.should.equal("1");
-            d[1].name.should.equal("key");
-            d[1].value.should.equal("2");
-            d[2].name.should.equal("flag");
-            d[2].value.should.equal(5);
-            d[3].name.should.equal("reason");
-            d[3].value.should.equal("hello");
-            f.should.equal(testGetForm);
+            var _this = this;
 
-            this.requests.length.should.equal(1);
-            this.requests[0].url.should.equal(this.currPath + "/testPath?id=1&key=2&flag=5&reason=hello");
-            this.requests[0].method.should.equal("get");
-            (!!this.requests[0].requestBody).should.be.false;
+            setTimeout(function () {
+                (!!d).should.be.true;
+                d[0].name.should.equal("id");
+                d[0].value.should.equal("1");
+                d[1].name.should.equal("key");
+                d[1].value.should.equal("2");
+                d[2].name.should.equal("flag");
+                d[2].value.should.equal(5);
+                d[3].name.should.equal("reason");
+                d[3].value.should.equal("hello");
+                f.should.equal(testGetForm);
+
+                _this.requests.length.should.equal(1);
+                _this.requests[0].url.should.equal(_this.currPath + "/testPath?id=1&key=2&flag=5&reason=hello");
+                _this.requests[0].method.should.equal("get");
+                (!!_this.requests[0].requestBody).should.be.false;
+            }, 0);
         });
 
         it("should correctly save cookies in alternative cookie header", function (done) {
@@ -101,7 +124,7 @@ describe("MagicForm", function () {
 
             MagicForm.ajaxSubmit(testGetForm2)
                 .then(function (resp) {
-                    resp.should.equal("world2");
+                    resp.response.should.equal("world2");
 
                     var cookies = JSON.parse(localStorage.getItem("cookies"));
                     (!!cookies).should.be.true;
@@ -113,7 +136,11 @@ describe("MagicForm", function () {
                     done(err);
                 });
 
-            this.server.respond();
+            var _this = this;
+
+            setTimeout(function () {
+                _this.server.respond();
+            }, 0);
         });
 
         it("should correctly remove cookies in alternative cookie header with expired date", function (done) {
@@ -124,7 +151,7 @@ describe("MagicForm", function () {
 
             MagicForm.ajaxSubmit(testGetForm3)
                 .then(function (resp) {
-                    resp.should.equal("world3");
+                    resp.response.should.equal("world3");
 
                     var cookies = JSON.parse(localStorage.getItem("cookies"));
                     (!!cookies).should.be.true;
@@ -136,7 +163,11 @@ describe("MagicForm", function () {
                     done(err);
                 });
 
-            this.server.respond();
+            var _this = this;
+
+            setTimeout(function () {
+                _this.server.respond();
+            }, 0);
         });
 
         it("should correctly send cookies saved in localStorage with alternative cookie header", function () {
@@ -146,8 +177,12 @@ describe("MagicForm", function () {
             MagicForm.configs.alternativeCookieHeaders.storeTo = window.localStorage;
             MagicForm.ajaxSubmit(testPostForm, null, { serializeAsJsonToParameter: "__json__" });
 
-            this.requests.length.should.equal(1);
-            this.requests[0].requestHeaders.should.have.property("Cowherd-Cookie", "a=1");
+            var _this = this;
+
+            setTimeout(function () {
+                _this.requests.length.should.equal(1);
+                _this.requests[0].requestHeaders.should.have.property("Cowherd-Cookie", "a=1");
+            }, 0);
         });
     });
 
@@ -191,7 +226,11 @@ describe("MagicForm", function () {
 
             testGetForm.querySelector(".f-submit").click();
 
-            this.server.respond();
+            var _this = this;
+
+            setTimeout(function () {
+                _this.server.respond();
+            }, 0);
         });
     });
 });
