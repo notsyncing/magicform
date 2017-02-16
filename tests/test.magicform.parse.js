@@ -1,6 +1,7 @@
 var testSingleFieldForm = document.getElementById("testSingleFieldForm");
 var testMultipleFieldsForm = document.getElementById("testMultipleFieldsForm");
 var testCheckboxFieldsForm = document.getElementById("testCheckboxFieldsForm");
+var testCheckboxFieldsForm2 = document.getElementById("testCheckboxFieldsForm2");
 var testRadioFieldsForm = document.getElementById("testRadioFieldsForm");
 var testDeepObjectFieldsForm = document.getElementById("testDeepObjectFieldsForm");
 var testArrayFieldsForm = document.getElementById("testArrayFieldsForm");
@@ -9,6 +10,12 @@ var testComplexFieldsForm = document.getElementById("testComplexFieldsForm");
 
 describe("MagicForm", function () {
     beforeEach(function () {
+        var forms = document.getElementsByTagName("form");
+
+        for (var i = 0; i < forms.length; i++) {
+            forms[i].reset();
+        }
+
         MagicForm.setConfigs();
     });
 
@@ -46,6 +53,27 @@ describe("MagicForm", function () {
             testCheckboxFieldsForm.querySelector(".f-useThird").checked.should.be.exactly(true);
             testCheckboxFieldsForm.querySelector(".f-useFourth").checked.should.be.exactly(true);
             testCheckboxFieldsForm.querySelector(".f-useFifth").checked.should.be.exactly(false);
+        });
+
+        it("should check correct valued checkboxes with an array of data", function () {
+            MagicForm.parse(testCheckboxFieldsForm2, {
+                arr: [ "1", "3" ]
+            });
+
+            testCheckboxFieldsForm2.querySelector(".f-check1").checked.should.be.exactly(true);
+            testCheckboxFieldsForm2.querySelector(".f-check2").checked.should.be.exactly(false);
+            testCheckboxFieldsForm2.querySelector(".f-check3").checked.should.be.exactly(true);
+        });
+
+        it("should check correct valued checkboxes with simply serialized array data", function () {
+            MagicForm.parse(testCheckboxFieldsForm2, [
+                { name: "arr[]", value: 1 },
+                { name: "arr[]", value: 3 }
+            ]);
+
+            testCheckboxFieldsForm2.querySelector(".f-check1").checked.should.be.exactly(true);
+            testCheckboxFieldsForm2.querySelector(".f-check2").checked.should.be.exactly(false);
+            testCheckboxFieldsForm2.querySelector(".f-check3").checked.should.be.exactly(true);
         });
 
         it("should check correct radio buttons in a multiple radio buttons form", function () {

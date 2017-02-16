@@ -5,9 +5,16 @@ var testRadioFieldsForm = document.getElementById("testRadioFieldsForm");
 var testDeepObjectFieldsForm = document.getElementById("testDeepObjectFieldsForm");
 var testArrayFieldsForm = document.getElementById("testArrayFieldsForm");
 var testComplexFieldsForm = document.getElementById("testComplexFieldsForm");
+var testCheckboxFieldsForm2 = document.getElementById("testCheckboxFieldsForm2");
 
 describe("MagicForm", function () {
     beforeEach(function () {
+        var forms = document.getElementsByTagName("form");
+
+        for (var i = 0; i < forms.length; i++) {
+            forms[i].reset();
+        }
+
         MagicForm.setConfigs();
     });
 
