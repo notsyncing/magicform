@@ -23,7 +23,7 @@
         serializeAsJsonToParameter: false
     };
 
-    function getInputElementValue(inputElem)
+    function getInputElementValue(inputElem, uncheckedAsFalse)
     {
         var type = inputElem.getAttribute("type");
 
@@ -45,7 +45,9 @@
 
         if (inputElem instanceof HTMLInputElement) {
             if (type === "checkbox") {
-                if (!(window.MagicForm.configs.uncheckedAsFalse === undefined ? defaultConfigs.uncheckedAsFalse : window.MagicForm.configs.uncheckedAsFalse)) {
+                uncheckedAsFalse = uncheckedAsFalse || window.MagicForm.configs.uncheckedAsFalse;
+
+                if (!(uncheckedAsFalse === undefined ? defaultConfigs.uncheckedAsFalse : uncheckedAsFalse)) {
                     if (!inputElem.checked) {
                         return null;
                     }
@@ -237,6 +239,7 @@
     {
         var name = inputElem.getAttribute("name");
         var rawName = name;
+        var type = inputElem.getAttribute("type");
 
         if ((!name) || (name.length <= 0)) {
             return;
@@ -249,6 +252,11 @@
 
             for (var i = 0; i < data.length; i++) {
                 if (data[i].name === rawName) {
+                    if ((type === "checkbox") && (inputElem.value != null) && (inputElem.value != data[i].value)) {
+                        skip++;
+                        continue;
+                    }
+
                     if (!arrayCounters[rawName]) {
                         arrayCounters[rawName] = 0;
                     } else if (skip < arrayCounters[rawName]) {
@@ -258,10 +266,13 @@
 
                     value = data[i].value;
                     arrayCounters[rawName]++;
+
                     break;
                 }
             }
         } else {
+            var lastIndexName;
+
             while (name.indexOf("[]") >= 0) {
                 var unindexedArrayEnd = name.indexOf("[]");
 
@@ -269,6 +280,7 @@
                     arrayCounters[name] = -1;
                 }
 
+                lastIndexName = name;
                 arrayCounters[name]++;
                 name = name.substring(0, unindexedArrayEnd) + "[" +
                     arrayCounters[name] + "]" + name.substring(unindexedArrayEnd + 2);
@@ -281,6 +293,10 @@
             }
 
             value = (new Function("data", "return data" + split + name + ";"))(data);
+
+            if ((type === "checkbox") && (inputElem.value != null) && (value != inputElem.value)) {
+                arrayCounters[lastIndexName]--;
+            }
         }
 
         setInputElementValue(inputElem, value);
@@ -312,7 +328,7 @@
         return obj;
     };
 
-    function serializeInputElementSimple(inputElem)
+    function serializeInputElementSimple(inputElem, uncheckedAsFalse)
     {
         var name = inputElem.getAttribute("name");
 
@@ -320,7 +336,7 @@
             return;
         }
 
-        var value = getInputElementValue(inputElem);
+        var value = getInputElementValue(inputElem, uncheckedAsFalse);
 
         if ((value === null) || (value === undefined)) {
             return;
@@ -347,12 +363,12 @@
         return pairs.join("&");
     };
 
-    window.MagicForm.serializeSimple = function (formElem) {
+    window.MagicForm.serializeSimple = function (formElem, uncheckedAsFalse) {
         var arr = [];
         var inputElems = formElem.querySelectorAll("input, select, textarea");
 
         for (var i = 0; i < inputElems.length; i++) {
-            var p = serializeInputElementSimple(inputElems.item(i));
+            var p = serializeInputElementSimple(inputElems.item(i), uncheckedAsFalse);
 
             if (!p) {
                 continue;
@@ -651,7 +667,7 @@
                 return opts.serializeAsJsonToParameter + "=" + encodeURIComponent(JSON.stringify(o));
             }
 
-            return window.MagicForm.serializeSimple(formElem);
+            return window.MagicForm.serializeSimple(formElem, true);
         };
 
         data = serializeData();
