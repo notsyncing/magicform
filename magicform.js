@@ -536,7 +536,17 @@
     {
         return new Promise(function (resolve, reject) {
             try {
+                if (method.toLocaleLowerCase() !== "post") {
+                    url += "?" + ((data instanceof Array) ? simpleArrayToQueryString(data) : simpleObjectToQueryString(data));
+                    data = null;
+                } else if (typeof data === "string") {
+                    data = data;
+                } else if ((window.FormData) && (!(data instanceof FormData))) {
+                    data = (data instanceof Array) ? simpleArrayToQueryString(data) : simpleObjectToQueryString(data);
+                }
+
                 var xhr = new XMLHttpRequest();
+                xhr.open(method, url, true);
 
                 if (!window.MagicForm.configs.denyCORSCredentials) {
                     xhr.withCredentials = true;
@@ -571,17 +581,6 @@
                         }
                     }
                 };
-
-                if (method.toLocaleLowerCase() !== "post") {
-                    url += "?" + ((data instanceof Array) ? simpleArrayToQueryString(data) : simpleObjectToQueryString(data));
-                    data = null;
-                } else if (typeof data === "string") {
-                    data = data;
-                } else if ((window.FormData) && (!(data instanceof FormData))) {
-                    data = (data instanceof Array) ? simpleArrayToQueryString(data) : simpleObjectToQueryString(data);
-                }
-
-                xhr.open(method, url, true);
 
                 processSendAlternativeCookieHeaders(xhr);
 
