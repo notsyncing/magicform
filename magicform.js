@@ -118,6 +118,8 @@
                 } else if (objRef[partName] instanceof Array) {
                     len = objRef[partName].push({});
                     objRef = objRef[partName][len - 1];
+                } else {
+                    objRef = objRef[partName];
                 }
 
                 objRefParentArray = null;

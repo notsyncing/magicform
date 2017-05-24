@@ -63,6 +63,7 @@ describe("MagicForm", function () {
 
             obj.should.have.property("field2");
             obj.field2.should.have.property("inner", "b");
+            obj.field2.should.have.property("inner2", "d");
 
             obj.should.have.property("field3");
             obj.field3.should.have.property("inner");
