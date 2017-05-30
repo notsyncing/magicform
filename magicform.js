@@ -1,6 +1,6 @@
-(function() {
-    "use strict";
+"use strict";
 
+(function() {
     if (!window.MagicForm) {
         window.MagicForm = {};
     }
@@ -762,5 +762,110 @@
         var data = opts.data;
 
         return ajax(method, url, data, xhrFields);
+    };
+})();
+
+(function () {
+    if (!window.Manifold) {
+        window.Manifold = {
+            serverUrl: "http://localhost:8080/service/gateway"
+        };
+    }
+
+    window.Manifold.sceneUrl = function (method, name, parameters, sessionIdentifier) {
+        var url = window.Manifold.serverUrl + "/" + name;
+        var payload = "";
+
+        if (parameters) {
+            if (parameters instanceof FormData) {
+                payload = parameters;
+            } else {
+                payload = "json=" + encodeURIComponent(JSON.stringify(parameters));
+            }
+        }
+
+        if (sessionIdentifier) {
+            if (payload instanceof FormData) {
+                payload.append("access_token", sessionIdentifier);
+            } else {
+                if (payload !== "") {
+                    payload += "&";
+                }
+
+                payload += "access_token=" + sessionIdentifier;
+            }
+        }
+
+        if (payload) {
+            if (method === "get") {
+                url += "?" + payload;
+                payload = null;
+            }
+        }
+
+        return {
+            url: url,
+            payload: payload
+        };
+    };
+
+    window.Manifold.getSceneUrl = function (method, name, parameters, sessionIdentifier) {
+        var o = window.Manifold.sceneUrl(method, name, parameters, sessionIdentifier);
+        return o.url;
+    };
+
+    window.Manifold.callScene = function (method, name, parameters, sessionIdentifier) {
+        var o = window.Manifold.sceneUrl(method, name, parameters, sessionIdentifier);
+
+        return window.MagicForm.ajax({
+            method: method,
+            url: o.url,
+            data: o.payload
+        }).then(function (r) { return r.response; });
+    };
+
+    function _serializeForm (form) {
+        var json = window.MagicForm.serialize(form);
+
+        if (form.enctype === "multipart/form-data") {
+            var formData = new FormData();
+            formData.append("json", JSON.stringify(json));
+
+            for (var i = 0; i < form.childNodes.length; i++) {
+                var e = form.childNodes[i];
+
+                if (!(e instanceof HTMLInputElement)) {
+                    continue;
+                }
+
+                if (e.type !== "file") {
+                    continue;
+                }
+
+                for (var j = 0; j < e.files.length; j++) {
+                    formData.append(e.name, e.files[j]);
+                }
+            }
+
+            return formData;
+        }
+
+        return json;
+    }
+
+    window.Manifold.getScene = function (name, parameters, sessionIdentifier) {
+        if (parameters instanceof Element) {
+            parameters = window.Manifold._serializeForm(parameters);
+        }
+
+        return window.Manifold.callScene("get", name, parameters, sessionIdentifier);
+    };
+
+    window.Manifold.postScene = function (name, parameters, sessionIdentifier) {
+        if (parameters instanceof Element) {
+            parameters = Manifold._serializeForm(parameters);
+        }
+
+        return window.Manifold.callScene("post", name, parameters, sessionIdentifier);
     };
 })();
