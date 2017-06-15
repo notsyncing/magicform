@@ -437,7 +437,7 @@
         var setCookieStart = ch.setCookie + ": ";
 
         for (var i = 0; i < headers.length; i++) {
-            if (headers[i].indexOf(setCookieStart) === 0) {
+            if (headers[i].toLowerCase().indexOf(setCookieStart.toLowerCase()) === 0) {
                 setCookieHeader = headers[i].substring(setCookieStart.length);
                 break;
             }
