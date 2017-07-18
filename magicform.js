@@ -855,7 +855,7 @@
 
     window.Manifold.getScene = function (name, parameters, sessionIdentifier) {
         if (parameters instanceof Element) {
-            parameters = window.Manifold._serializeForm(parameters);
+            parameters = _serializeForm(parameters);
         }
 
         return window.Manifold.callScene("get", name, parameters, sessionIdentifier);
@@ -863,7 +863,7 @@
 
     window.Manifold.postScene = function (name, parameters, sessionIdentifier) {
         if (parameters instanceof Element) {
-            parameters = Manifold._serializeForm(parameters);
+            parameters = _serializeForm(parameters);
         }
 
         return window.Manifold.callScene("post", name, parameters, sessionIdentifier);
