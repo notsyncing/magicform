@@ -638,11 +638,19 @@
                     if (!result) {
                         reject();
                     } else {
-                        formElem.submit();
+                        if (hooks.submit) {
+                            return hooks.submit(formElem, method, url, data);
+                        } else {
+                            formElem.submit();
+                        }
                     }
                 });
             } else {
-                formElem.submit();
+                if (hooks.submit) {
+                    return hooks.submit(formElem, method, url, data);
+                } else {
+                    formElem.submit();
+                }
             }
         });
     }
@@ -713,7 +721,11 @@
                     }
                 }
 
-                return ajax(method, url, data);
+                if (hooks.submit) {
+                    return hooks.submit(formElem, method, url, data);
+                } else {
+                    return ajax(method, url, data);
+                }
             }
         });
     };
@@ -772,6 +784,20 @@
         };
     }
 
+    function simpleArrayToSimpleObject(arr) {
+        if (!arr) {
+            return {};
+        }
+
+        var o = {};
+
+        for (var i = 0; i < arr.length; i++) {
+            o[arr[i].name] = arr[i].value;
+        }
+
+        return o;
+    }
+
     window.Manifold.sceneUrl = function (method, name, parameters, sessionIdentifier) {
         var url = window.Manifold.serverUrl + "/" + name;
         var payload = "";
@@ -780,6 +806,10 @@
             if (parameters instanceof FormData) {
                 payload = parameters;
             } else {
+                if (parameters instanceof Array) {
+                    parameters = simpleArrayToSimpleObject(parameters);
+                }
+
                 payload = "json=" + encodeURIComponent(JSON.stringify(parameters));
             }
         }
