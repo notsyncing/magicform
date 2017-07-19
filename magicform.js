@@ -539,8 +539,10 @@
         return new Promise(function (resolve, reject) {
             try {
                 if (method.toLocaleLowerCase() !== "post") {
-                    url += "?" + ((data instanceof Array) ? simpleArrayToQueryString(data) : simpleObjectToQueryString(data));
-                    data = null;
+                    if (data != null) {
+                        url += "?" + ((data instanceof Array) ? simpleArrayToQueryString(data) : simpleObjectToQueryString(data));
+                        data = null;
+                    }
                 } else if (typeof data === "string") {
                     data = data;
                 } else if ((window.FormData) && (!(data instanceof FormData))) {
