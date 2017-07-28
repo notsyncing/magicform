@@ -782,7 +782,8 @@
 (function () {
     if (!window.Manifold) {
         window.Manifold = {
-            serverUrl: "http://localhost:8080/service/gateway"
+            serverUrl: "http://localhost:8080/manifold/gateway",
+            namespace: null
         };
     }
 
@@ -800,7 +801,7 @@
         return o;
     }
 
-    window.Manifold.sceneUrl = function (method, name, parameters, sessionIdentifier) {
+    window.Manifold.sceneUrl = function (method, name, parameters, sessionIdentifier, namespace) {
         var url = window.Manifold.serverUrl + "/" + name;
         var payload = "";
 
@@ -828,6 +829,20 @@
             }
         }
 
+        namespace = namespace || Manifold.namespace;
+
+        if (namespace) {
+            if (payload instanceof FormData) {
+                payload.append("namespace", namespace);
+            } else {
+                if (payload !== "") {
+                    payload += "&";
+                }
+
+                payload += "namespace=" + namespace;
+            }
+        }
+
         if (payload) {
             if (method === "get") {
                 url += "?" + payload;
@@ -841,13 +856,13 @@
         };
     };
 
-    window.Manifold.getSceneUrl = function (method, name, parameters, sessionIdentifier) {
-        var o = window.Manifold.sceneUrl(method, name, parameters, sessionIdentifier);
+    window.Manifold.getSceneUrl = function (method, name, parameters, sessionIdentifier, namespace) {
+        var o = window.Manifold.sceneUrl(method, name, parameters, sessionIdentifier, namespace);
         return o.url;
     };
 
-    window.Manifold.callScene = function (method, name, parameters, sessionIdentifier) {
-        var o = window.Manifold.sceneUrl(method, name, parameters, sessionIdentifier);
+    window.Manifold.callScene = function (method, name, parameters, sessionIdentifier, namespace) {
+        var o = window.Manifold.sceneUrl(method, name, parameters, sessionIdentifier, namespace);
 
         return window.MagicForm.ajax({
             method: method,
@@ -885,19 +900,19 @@
         return json;
     }
 
-    window.Manifold.getScene = function (name, parameters, sessionIdentifier) {
+    window.Manifold.getScene = function (name, parameters, sessionIdentifier, namespace) {
         if (parameters instanceof Element) {
             parameters = _serializeForm(parameters);
         }
 
-        return window.Manifold.callScene("get", name, parameters, sessionIdentifier);
+        return window.Manifold.callScene("get", name, parameters, sessionIdentifier, namespace);
     };
 
-    window.Manifold.postScene = function (name, parameters, sessionIdentifier) {
+    window.Manifold.postScene = function (name, parameters, sessionIdentifier, namespace) {
         if (parameters instanceof Element) {
             parameters = _serializeForm(parameters);
         }
 
-        return window.Manifold.callScene("post", name, parameters, sessionIdentifier);
+        return window.Manifold.callScene("post", name, parameters, sessionIdentifier, namespace);
     };
 })();
