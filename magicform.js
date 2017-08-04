@@ -915,4 +915,17 @@
 
         return window.Manifold.callScene("post", name, parameters, sessionIdentifier, namespace);
     };
+
+    window.Manifold.performDramaAction = function (name, parameters, sessionIdentifier, namespace) {
+        if (parameters instanceof Element) {
+            parameters = _serializeForm(parameters);
+        }
+
+        let p = {
+            action: name,
+            parameters: parameters
+        };
+
+        return window.Manifold.postScene("manifold.drama.entry", p, sessionIdentifier, namespace);
+    }
 })();
