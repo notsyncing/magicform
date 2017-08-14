@@ -878,8 +878,10 @@
             var formData = new FormData();
             formData.append("json", JSON.stringify(json));
 
-            for (var i = 0; i < form.childNodes.length; i++) {
-                var e = form.childNodes[i];
+            var inputs = form.querySelectorAll("input");
+
+            for (var i = 0; i < inputs.length; i++) {
+                var e = inputs[i];
 
                 if (!(e instanceof HTMLInputElement)) {
                     continue;
