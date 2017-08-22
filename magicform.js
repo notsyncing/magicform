@@ -80,13 +80,13 @@
 
     function serializeInputElement(inputElem, obj)
     {
-        var name = inputElem.getAttribute("name");
+        var name = (inputElem instanceof Element) ? inputElem.getAttribute("name") : inputElem.name;
 
         if ((!name) || (name.length <= 0)) {
             return;
         }
 
-        var value = getInputElementValue(inputElem);
+        var value = (inputElem instanceof Element) ? getInputElementValue(inputElem) : inputElem.value;
 
         if ((value === null) || (value === undefined)) {
             return;
@@ -329,6 +329,16 @@
 
         return obj;
     };
+
+    function serializeSimpleToComplex(simpleObj) {
+        var obj = {};
+
+        for (var i = 0; i < simpleObj.length; i++) {
+            serializeInputElement(simpleObj[i], obj);
+        }
+
+        return obj;
+    }
 
     function serializeInputElementSimple(inputElem, uncheckedAsFalse)
     {
@@ -724,7 +734,8 @@
                 }
 
                 if (hooks.submit) {
-                    return hooks.submit(formElem, method, url, data);
+                    var _data = ((window.FormData) && (data instanceof FormData)) ? data : serializeSimpleToComplex(data);
+                    return hooks.submit(formElem, method, url, _data);
                 } else {
                     return ajax(method, url, data);
                 }
