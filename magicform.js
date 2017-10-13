@@ -80,13 +80,13 @@
 
     function serializeInputElement(inputElem, obj)
     {
-        var name = (inputElem instanceof Element) ? inputElem.getAttribute("name") : inputElem.name;
+        var name = inputElem.getAttribute("name");
 
         if ((!name) || (name.length <= 0)) {
             return;
         }
 
-        var value = (inputElem instanceof Element) ? getInputElementValue(inputElem) : inputElem.value;
+        var value = getInputElementValue(inputElem);
 
         if ((value === null) || (value === undefined)) {
             return;
@@ -329,16 +329,6 @@
 
         return obj;
     };
-
-    function serializeSimpleToComplex(simpleObj) {
-        var obj = {};
-
-        for (var i = 0; i < simpleObj.length; i++) {
-            serializeInputElement(simpleObj[i], obj);
-        }
-
-        return obj;
-    }
 
     function serializeInputElementSimple(inputElem, uncheckedAsFalse)
     {
@@ -734,8 +724,7 @@
                 }
 
                 if (hooks.submit) {
-                    var _data = ((window.FormData) && (data instanceof FormData)) ? data : serializeSimpleToComplex(data);
-                    return hooks.submit(formElem, method, url, _data);
+                    return hooks.submit(formElem, method, url, data);
                 } else {
                     return ajax(method, url, data);
                 }
@@ -882,13 +871,11 @@
         }).then(function (r) { return r.response; });
     };
 
-    function _serializeForm (form) {
+    function _serializeForm(form, customWrapper) {
         var json = window.MagicForm.serialize(form);
 
         if (form.enctype === "multipart/form-data") {
             var formData = new FormData();
-            formData.append("json", JSON.stringify(json));
-
             var inputs = form.querySelectorAll("input");
 
             for (var i = 0; i < inputs.length; i++) {
@@ -904,8 +891,18 @@
 
                 for (var j = 0; j < e.files.length; j++) {
                     formData.append(e.name, e.files[j]);
+
+                    if (json[e.name]) {
+                        delete json[e.name];
+                    }
                 }
             }
+
+            if (customWrapper) {
+                json = customWrapper(json);
+            }
+
+            formData.append("json", JSON.stringify(json));
 
             return formData;
         }
@@ -931,14 +928,16 @@
 
     window.Manifold.performDramaAction = function (name, parameters, sessionIdentifier, namespace) {
         if (parameters instanceof Element) {
-            parameters = _serializeForm(parameters);
+            parameters = _serializeForm(parameters, function (o) {
+                var d = JSON.parse(JSON.stringify(o));
+
+                return {
+                    action: name,
+                    parameters: d
+                };
+            });
         }
 
-        let p = {
-            action: name,
-            parameters: parameters
-        };
-
-        return window.Manifold.postScene("manifold.drama.entry", p, sessionIdentifier, namespace);
+        return window.Manifold.postScene("manifold.drama.entry", parameters, sessionIdentifier, namespace);
     }
 })();
