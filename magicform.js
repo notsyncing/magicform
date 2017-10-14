@@ -905,6 +905,10 @@
             formData.append("json", JSON.stringify(json));
 
             return formData;
+        } else {
+            if (customWrapper) {
+                json = customWrapper(json);
+            }
         }
 
         return json;
@@ -936,6 +940,11 @@
                     parameters: d
                 };
             });
+        } else {
+            parameters = {
+                action: name,
+                parameters: parameters
+            }
         }
 
         return window.Manifold.postScene("manifold.drama.entry", parameters, sessionIdentifier, namespace);
