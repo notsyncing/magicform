@@ -254,7 +254,7 @@
 
             for (var i = 0; i < data.length; i++) {
                 if (data[i].name === rawName) {
-                    if ((type === "checkbox") && (inputElem.value != null) && (inputElem.value != data[i].value)) {
+                    if (((type === "checkbox") || (type === "radio")) && (inputElem.value != null) && (inputElem.value != data[i].value)) {
                         skip++;
                         continue;
                     }
@@ -296,7 +296,7 @@
 
             value = (new Function("data", "return data" + split + name + ";"))(data);
 
-            if ((type === "checkbox") && (inputElem.value != null) && (value != inputElem.value)) {
+            if (((type === "checkbox") || (type === "radio")) && (inputElem.value != null) && (value != inputElem.value)) {
                 arrayCounters[lastIndexName]--;
             }
         }
